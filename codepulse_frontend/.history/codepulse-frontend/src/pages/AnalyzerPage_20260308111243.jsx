@@ -1,0 +1,277 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+import Editor from "@monaco-editor/react";
+import toast from "react-hot-toast";
+import Navbar from "../components/Navbar";
+import { 
+  Play, CheckCircle, 
+  AlertTriangle, XCircle 
+} from "lucide-react";
+
+export default function AnalyzerPage() {
+  const [code, setCode] = useState("// Paste your code here...");
+  const [language, setLanguage] = useState("java");
+  const [score, setScore] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const metrics = score ? [
+    { 
+      label: "Complexity", 
+      value: score.complexity, 
+      icon: <CheckCircle className="text-green-400" size={18}/> 
+    },
+    { 
+      label: "Duplicates", 
+      value: score.duplicates, 
+      icon: <AlertTriangle className="text-yellow-400" size={18}/> 
+    },
+    { 
+      label: "Dead Code", 
+      value: score.deadCode, 
+      icon: <XCircle className="text-red-400" size={18}/> 
+    },
+    { 
+      label: "Security", 
+      value: score.security, 
+      icon: <CheckCircle className="text-green-400" size={18}/> 
+    },
+  ] : [];
+
+  const analyzeCode = async () => {
+    if (!code || code.trim() === "") {
+      toast.error("Please paste some code first!");
+      return;
+    }
+    setLoading(true);
+
+    // Dummy result (replace with real API later)
+    setTimeout(() => {
+      setScore({
+        overall: 78,
+        grade: "B+",
+        complexity: "Low ✅",
+        duplicates: "2 Found ⚠️",
+        deadCode: "3 Found ❌",
+        security: "Good ✅",
+        suggestions: [
+          "Remove unused variable at line 12",
+          "Simplify nested loop at line 34",
+          "Add null check at line 56",
+        ],
+      });
+      setLoading(false);
+      toast.success("Analysis Complete!");
+    }, 2000);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0f]">
+      <Navbar />
+      <div className="pt-24 px-6 pb-10 
+        max-w-7xl mx-auto">
+        
+        <h1 className="text-3xl font-bold 
+          text-white mb-6">
+          Code{" "}
+          <span className="bg-gradient-to-r 
+            from-purple-400 to-green-400 
+            bg-clip-text text-transparent">
+            Analyzer
+          </span>
+        </h1>
+
+        <div className="grid grid-cols-1 
+          lg:grid-cols-2 gap-6">
+
+          {/* Left - Code Editor */}
+          <div className="rounded-2xl overflow-hidden 
+            border border-white/10">
+            
+            {/* Editor Header */}
+            <div className="flex items-center 
+              justify-between px-4 py-3 
+              bg-[#111827] border-b border-white/10">
+              <select
+                value={language}
+                onChange={(e) => 
+                  setLanguage(e.target.value)}
+                className="bg-white/10 text-white 
+                  text-sm px-3 py-1 rounded-lg 
+                  border border-white/20 
+                  outline-none"
+              >
+                <option value="java">Java</option>
+                <option value="javascript">
+                  JavaScript
+                </option>
+                <option value="python">Python</option>
+                <option value="cpp">C++</option>
+              </select>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={analyzeCode}
+                disabled={loading}
+                className="flex items-center gap-2 
+                  px-5 py-2 rounded-lg font-semibold
+                  bg-gradient-to-r from-purple-600 
+                  to-indigo-600 hover:from-purple-500 
+                  hover:to-indigo-500 disabled:opacity-50
+                  transition-all text-sm"
+              >
+                <Play size={16} />
+                {loading ? "Analyzing..." : "Analyze 🚀"}
+              </motion.button>
+            </div>
+
+            {/* Monaco Editor */}
+            <Editor
+              height="500px"
+              language={language}
+              value={code}
+              onChange={(val) => setCode(val)}
+              theme="vs-dark"
+              options={{
+                fontSize: 14,
+                minimap: { enabled: false },
+                padding: { top: 16 },
+              }}
+            />
+          </div>
+
+          {/* Right - Results */}
+          <div className="space-y-4">
+            {score ? (
+              <>
+                {/* Score Card */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="p-6 rounded-2xl 
+                    bg-white/5 border border-white/10
+                    flex items-center gap-6"
+                >
+                  {/* Circle Score */}
+                  <div className="relative w-28 h-28">
+                    <svg className="w-28 h-28 
+                      -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="40"
+                        fill="none" stroke="#1f2937" 
+                        strokeWidth="10" />
+                      <circle cx="50" cy="50" r="40"
+                        fill="none" 
+                        stroke="#6366f1"
+                        strokeWidth="10"
+                        strokeLinecap="round"
+                        strokeDasharray={`${score.overall * 2.51} 251`}
+                      />
+                    </svg>
+                    <div className="absolute inset-0 
+                      flex flex-col items-center 
+                      justify-center">
+                      <span className="text-2xl 
+                        font-bold text-white">
+                        {score.overall}
+                      </span>
+                      <span className="text-xs 
+                        text-gray-400">/ 100</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-gray-400 
+                      text-sm mb-1">
+                      Overall Score
+                    </p>
+                    <div className="inline-block 
+                      px-4 py-1 rounded-full text-2xl 
+                      font-bold bg-gradient-to-r 
+                      from-purple-500 to-indigo-500">
+                      {score.grade}
+                    </div>
+                    <p className="text-gray-400 
+                      text-sm mt-2">
+                      Good code quality! 🎉
+                    </p>
+                  </div>
+                </motion.div>
+
+                {/* Metric Cards */}
+                <div className="grid grid-cols-2 gap-3">
+                  {metrics.map((m, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      className="p-4 rounded-xl 
+                        bg-white/5 border border-white/10"
+                    >
+                      <div className="flex items-center 
+                        gap-2 mb-1">
+                        {m.icon}
+                        <span className="text-sm 
+                          text-gray-400">{m.label}</span>
+                      </div>
+                      <p className="text-white 
+                        font-semibold text-sm">
+                        {m.value}
+                      </p>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Suggestions */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-5 rounded-2xl 
+                    bg-white/5 border border-white/10"
+                >
+                  <h3 className="font-semibold 
+                    text-white mb-3">
+                    💡 Suggestions
+                  </h3>
+                  <ul className="space-y-2">
+                    {score.suggestions.map((s, i) => (
+                      <li key={i} 
+                        className="flex items-start 
+                          gap-2 text-sm text-gray-300">
+                        <span className="text-purple-400 
+                          mt-0.5">→</span>
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              </>
+            ) : (
+              /* Empty State */
+              <div className="h-full flex flex-col 
+                items-center justify-center 
+                text-center p-10 rounded-2xl 
+                bg-white/5 border border-white/10 
+                border-dashed min-h-[500px]">
+                <div className="w-16 h-16 rounded-2xl 
+                  bg-purple-500/10 flex items-center 
+                  justify-center mb-4">
+                  <Play className="text-purple-400" 
+                    size={28} />
+                </div>
+                <h3 className="text-white font-semibold 
+                  text-lg mb-2">
+                  Ready to Analyze
+                </h3>
+                <p className="text-gray-500 text-sm">
+                  Paste your code on the left and 
+                  click "Analyze" to get started
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
