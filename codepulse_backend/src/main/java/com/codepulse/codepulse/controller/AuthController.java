@@ -1,9 +1,7 @@
 package com.codepulse.codepulse.controller;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.codepulse.codepulse.dto.SignupRequest;
 import com.codepulse.codepulse.service.AuthService;
 
@@ -25,7 +23,6 @@ public class AuthController {
             return ResponseEntity.badRequest().body(result);
         }
     }
-
     //LOGIN API
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody SignupRequest request) {
