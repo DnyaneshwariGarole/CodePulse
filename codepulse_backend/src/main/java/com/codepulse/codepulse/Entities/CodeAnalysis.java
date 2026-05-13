@@ -1,5 +1,4 @@
 package com.codepulse.codepulse.Entities;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -39,7 +38,7 @@ public class CodeAnalysis {
         this.loops = loops;
     }
 
-    // Complexity
+    //Complexity
     public String getComplexity() {
         return complexity;
     }
