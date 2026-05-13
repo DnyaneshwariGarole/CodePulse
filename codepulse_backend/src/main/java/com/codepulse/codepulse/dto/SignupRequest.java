@@ -1,6 +1,4 @@
 package com.codepulse.codepulse.dto;
-
-
 public class SignupRequest {
 
     private String name;
