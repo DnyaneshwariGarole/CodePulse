@@ -1,7 +1,7 @@
 package com.codepulse.codepulse.dto;
 
 public class CodeResponse {
-
+    
     private int lines;
     private int loops;
     private String complexity;
@@ -9,7 +9,6 @@ public class CodeResponse {
     private int duplicateLines;
     private int productivityScore;
     private String warning;
-    
 
     public int getLines() {
         return lines;
@@ -62,7 +61,7 @@ public class CodeResponse {
     public String getWarning() {
         return warning;
     }
-
+    
     public void setWarning(String warning) {
         this.warning = warning;
     }
